@@ -19,17 +19,45 @@
     </div>
 
     <div id="main">
-        <div class="column" id="todo"><h3>Not Started</h3></div>
-        <div class="column" id="in-progress"><h3>In Progress</h3></div>
-        <div class="column" id="done"><h3>Done</h3></div>
+        <div class="column" id="todo">
+            <h3>Not Started</h3>
+        </div>
+        <div class="column" id="in-progress">
+            <div class="column-header">
+                <h3>In Progress</h3>
+                <p id="WIP_MAX">0/3</p>
+            </div>
+        </div>
+        <div class="column" id="done">
+            <h3>Done</h3>
+        </div>
     </div>
 
     <!-- GLOBAL MODAL -->
     <div id="global-modal" class="modal">
         <div class="modal-content">
+
             <span id="modal-close" class="close">&times;</span>
-            <h3 id="modal-title"></h3>
-            <div id="modal-body"></div>
+
+            <input id="modal-title-input" class="modal-title-input">
+
+            <h4>Description</h4>
+            <textarea id="modal-description" placeholder="Task description..."></textarea>
+
+            <h4>Tags</h4>
+            <input id="modal-tags" placeholder="#frontend #urgent">
+
+            <h4>Subtasks</h4>
+
+            <div id="subtask-list"></div>
+
+            <div class="subtask-add">
+                <input id="new-subtask-input" placeholder="New subtask...">
+                <button id="add-subtask-btn">Add</button>
+            </div>
+
+            <button id="save-task-btn">Save Task</button>
+
         </div>
     </div>
 

@@ -60,6 +60,19 @@ body {
     text-align: center;
 }
 
+.column-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+#WIP_MAX {
+    color: #a8a8a8;
+    font-size: 14px;
+    margin: 0;
+}
+
 .task {
     background-color: #3e3f46;
     border-radius: 5px;
@@ -74,6 +87,7 @@ body {
 }
 
 .delete {
+    margin-top: 1px;
     float: right;
     border: none;
     background: none;
@@ -110,14 +124,176 @@ body {
 
 .modal-content {
     background: #2e2f36;
-    margin: 10% auto;
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+
     padding: 20px;
     width: 300px;
+    max-height: 85vh;
+
+    overflow-y: auto;
+
     border-radius: 8px;
     color: white;
+}
+
+.modal textarea {
+    width: 100%;
+    min-height: 80px;
+    margin-bottom: 10px;
+    resize: vertical;
+}
+
+.modal input {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 6px;
+    box-sizing: border-box;
+}
+
+.modal-title-input {
+    font-size: 20px;
+    font-weight: bold;
+    background: transparent;
+    color: white;
+    border: none;
+    margin-bottom: 15px;
+}
+
+.subtask {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    gap: 8px;
+}
+
+.subtask input[type="checkbox"] {
+    width: auto;
+}
+
+.subtask-add {
+    display: flex;
+    gap: 5px;
+}
+
+#save-task-btn {
+    margin-top: 15px;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background: #0f62fe;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 .close {
     float: right;
     cursor: pointer;
+}
+
+/* SUBTASK CONTAINER */
+.subtask {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 6px 8px;
+    margin-bottom: 6px;
+
+    background: #3a3b42;
+    border-radius: 6px;
+}
+
+/* SUBTASK TEXT */
+.subtask span {
+    color: #d0d0d0;
+    font-size: 14px;
+}
+
+/* CUSTOM CHECKBOX */
+.subtask input[type="checkbox"] {
+    position: relative;
+    top: 4px;
+
+    appearance: none;
+
+    width: 18px;
+    height: 18px;
+
+    border: 2px solid #0f62fe;
+    border-radius: 4px;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    position: relative;
+
+    transition: all 0.15s ease;
+}
+
+/* CHECKED STYLE */
+.subtask input[type="checkbox"]:checked {
+    background: #0f62fe;
+}
+
+/* CHECKMARK */
+.subtask input[type="checkbox"]:checked::after {
+    content: "✔";
+
+    position: absolute;
+
+    left: 2px;
+    top: -1px;
+
+    color: white;
+    font-size: 12px;
+}
+
+/* ADD SUBTASK ROW */
+.subtask-add {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* SUBTASK INPUT */
+#new-subtask-input {
+    flex: 1;
+
+    padding: 8px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: #3a3b42;
+    color: white;
+}
+
+/* ADD BUTTON */
+#add-subtask-btn {
+    padding: 8px 14px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: #0f62fe;
+    color: white;
+
+    cursor: pointer;
+
+    transition: background 0.15s ease;
+}
+
+/* BUTTON HOVER */
+#add-subtask-btn:hover {
+    background: #1f70ff;
+}
+
+/* BUTTON CLICK */
+#add-subtask-btn:active {
+    transform: scale(0.97);
 }
