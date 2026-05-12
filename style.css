@@ -164,9 +164,34 @@ body {
 
 .subtask {
     display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 6px 8px;
+    margin-bottom: 6px;
+    background: #3a3b42;
+    border-radius: 6px;
+}
+
+.subtask-header {
+    display: flex;
     align-items: center;
-    margin-bottom: 5px;
-    gap: 8px;
+    gap: 10px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.collapse-arrow {
+    font-size: 12px;
+    width: 14px;
+    transition: transform 0.15s ease;
+    transform: rotate(90deg);
+}
+
+.subtask-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
 }
 
 .subtask input[type="checkbox"] {
@@ -176,6 +201,39 @@ body {
 .subtask-add {
     display: flex;
     gap: 5px;
+}
+
+.add-child {
+    margin-left: auto;
+    background: #0f62fe;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.add-child:hover {
+    background: #1f70ff;
+}
+
+.subtask-children {
+    margin-left: 22px;
+    border-left: 2px solid #4e5056;
+    padding-left: 10px;
+    width: 100%;
+}
+
+.subtask.child {
+    background: transparent;
+    padding: 4px 0;
+    margin: 2px 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
 }
 
 #save-task-btn {
@@ -296,4 +354,25 @@ body {
 /* BUTTON CLICK */
 #add-subtask-btn:active {
     transform: scale(0.97);
+}
+
+.context-menu {
+    position: absolute;
+    display: none;
+    background: #2e2f36;
+    border: 1px solid #444;
+    border-radius: 6px;
+    z-index: 9999;
+    width: 120px;
+    color: white;
+    font-size: 14px;
+}
+
+.context-menu div {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.context-menu div:hover {
+    background: #3e3f46;
 }

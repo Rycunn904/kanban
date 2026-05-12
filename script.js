@@ -17,6 +17,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const newSubtaskInput = document.getElementById("new-subtask-input");
     const addSubtaskBtn = document.getElementById("add-subtask-btn");
 
+    const contextMenu = document.getElementById("context-menu");
+    const renameOption = document.getElementById("rename-option");
+    const deleteOption = document.getElementById("delete-option");
+
+    let selectedTaskElement = null;
+    let selectedSubtaskRef = null;
+
     const saveTaskBtn = document.getElementById("save-task-btn");
     const inProgressColumn = document.getElementById("in-progress");
     const WIP_MAX = document.getElementById("WIP_MAX");
@@ -141,27 +148,197 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     }
 
-    function renderSubtasks(subtasks) {
+    function renderSubtasks(subtasks, parentElement = subtaskList, depth = 0) {
 
-        subtaskList.innerHTML = "";
+        parentElement.innerHTML = "";
 
-        subtasks.forEach((sub, index) => {
+        subtasks.forEach((sub) => {
+
+            sub.children = sub.children || [];
+            sub.collapsed = sub.collapsed ?? false;
 
             const div = document.createElement("div");
             div.className = "subtask";
 
-            div.innerHTML = `
-            <input type="checkbox" ${sub.done ? "checked" : ""}>
-            <span>${sub.text}</span>
-        `;
+            // ================= HEADER =================
+            const header = document.createElement("div");
+            header.className = "subtask-header";
 
-            div.querySelector("input").addEventListener("change", (e) => {
-                subtasks[index].done = e.target.checked;
+            const arrow = document.createElement("span");
+            arrow.className = "collapse-arrow";
+            arrow.textContent = sub.children.length ? "▶" : " ";
+            arrow.style.transform = sub.collapsed ? "rotate(0deg)" : "rotate(90deg)";
+            arrow.style.display = sub.children.length ? "inline-block" : "none";
+
+            // checkbox
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.checked = sub.done;
+
+            // label
+            const label = document.createElement("span");
+            label.textContent = sub.text;
+
+            // ADD BUTTON (only top-level subtasks)
+            const addBtn = document.createElement("button");
+            addBtn.className = "add-child";
+            addBtn.textContent = "+";
+
+            if (depth !== 0) {
+                addBtn.style.display = "none";
+            }
+
+            header.appendChild(arrow);
+            header.appendChild(checkbox);
+            header.appendChild(label);
+            header.appendChild(addBtn);
+
+            div.appendChild(header);
+
+            // toggle done
+            checkbox.addEventListener("change", (e) => {
+                sub.done = e.target.checked;
             });
 
-            subtaskList.appendChild(div);
+            addBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+
+                const text = prompt("New sub-subtask:");
+                if (!text) return;
+
+                sub.children = sub.children || [];
+
+                sub.children.push({
+                    text,
+                    done: false
+                });
+
+                renderSubtasks(currentEditingTask.taskData.subtasks);
+            });
+
+            div.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                selectedTaskElement = currentEditingTask;
+                selectedSubtaskRef = sub;
+
+                showContextMenu(e.pageX, e.pageY);
+            });
+
+            // collapse / expand (click header except checkbox)
+            header.addEventListener("click", (e) => {
+                if (e.target.tagName === "INPUT") return;
+                if (sub.children.length === 0) return;
+
+                sub.collapsed = !sub.collapsed;
+
+                renderSubtasks(currentEditingTask.taskData.subtasks);
+            });
+
+            // ================= CHILDREN =================
+            if (sub.children.length > 0 && !sub.collapsed) {
+
+                const childContainer = document.createElement("div");
+                childContainer.className = "subtask-children";
+
+                sub.children.forEach(child => {
+
+                    const childDiv = document.createElement("div");
+                    childDiv.className = "subtask child";
+
+                    const childCheckbox = document.createElement("input");
+                    childCheckbox.type = "checkbox";
+                    childCheckbox.checked = child.done;
+
+                    const childLabel = document.createElement("span");
+                    childLabel.textContent = child.text;
+
+                    childCheckbox.addEventListener("change", (e) => {
+                        child.done = e.target.checked;
+                    });
+
+                    childDiv.addEventListener("contextmenu", (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        selectedTaskElement = currentEditingTask;
+                        selectedSubtaskRef = child;
+
+                        showContextMenu(e.pageX, e.pageY);
+                    });
+
+                    childDiv.appendChild(childCheckbox);
+                    childDiv.appendChild(childLabel);
+
+                    childContainer.appendChild(childDiv);
+                });
+
+                div.appendChild(childContainer);
+            }
+
+            parentElement.appendChild(div);
         });
     }
+
+    function showContextMenu(x, y) {
+        contextMenu.style.display = "block";
+        contextMenu.style.left = x + "px";
+        contextMenu.style.top = y + "px";
+    }
+
+    window.addEventListener("click", () => {
+        contextMenu.style.display = "none";
+    });
+
+    renameOption.addEventListener("click", () => {
+
+        if (!selectedSubtaskRef) return;
+
+        const newName = prompt("Rename:", selectedSubtaskRef.text);
+
+        if (!newName) return;
+
+        selectedSubtaskRef.text = newName;
+
+        renderSubtasks(currentEditingTask.taskData.subtasks);
+        contextMenu.style.display = "none";
+    });
+
+    deleteOption.addEventListener("click", () => {
+
+        if (!selectedSubtaskRef) return;
+
+        function removeItem(list, target) {
+
+            for (let i = 0; i < list.length; i++) {
+
+                const item = list[i];
+
+                // MATCH EXACT OBJECT
+                if (item === target) {
+                    list.splice(i, 1);
+                    return true;
+                }
+
+                // search children safely
+                if (item.children && item.children.length > 0) {
+                    const found = removeItem(item.children, target);
+                    if (found) return true;
+                }
+            }
+
+            return false;
+        }
+
+        removeItem(
+            currentEditingTask.taskData.subtasks,
+            selectedSubtaskRef
+        );
+
+        renderSubtasks(currentEditingTask.taskData.subtasks);
+        contextMenu.style.display = "none";
+    });
 
     function updateWIPCount() {
         const count =
