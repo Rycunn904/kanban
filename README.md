@@ -67,11 +67,15 @@ Right-click support for:
 
 ## 🚀 How to Run
 
+Dont want to change it:
+
+1. Open [KanBan To-Do List](https://rycunn904.github.io/kanban/)
+
+Want to change it:
+
 1. Clone or download the project
 2. Open `index.html` in your browser
 3. Start adding tasks!
-
-No build tools or installation required.
 
 ---
 
@@ -85,6 +89,7 @@ No build tools or installation required.
 5. Track progress automatically
 
 ### Data Storage
+
 All board data is saved in:
 ```js
 localStorage["kanbanBoard"]
