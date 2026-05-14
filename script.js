@@ -166,9 +166,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const arrow = document.createElement("span");
             arrow.className = "collapse-arrow";
-            arrow.textContent = sub.children.length ? "▶" : " ";
-            arrow.style.transform = sub.collapsed ? "rotate(0deg)" : "rotate(90deg)";
-            arrow.style.display = sub.children.length ? "inline-block" : "none";
+            arrow.textContent = sub.children.length ? "▶" : "";
+            arrow.style.transform =
+                sub.collapsed ? "rotate(0deg)" : "rotate(90deg)";
+            arrow.style.display =
+                sub.children.length ? "inline-block" : "none";
 
             // checkbox
             const checkbox = document.createElement("input");
@@ -179,12 +181,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const label = document.createElement("span");
             label.textContent = sub.text;
 
-            // ADD BUTTON (only top-level subtasks)
+            // ADD BUTTON
             const addBtn = document.createElement("button");
             addBtn.className = "add-child";
             addBtn.textContent = "+";
 
-            if (depth !== 0) {
+            // LIMIT DEPTH TO 2 EXTRA LEVELS
+            if (depth >= 2) {
                 addBtn.style.display = "none";
             }
 
@@ -195,27 +198,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
             div.appendChild(header);
 
-            // toggle done
+            // ================= CHECKBOX =================
             checkbox.addEventListener("change", (e) => {
                 sub.done = e.target.checked;
             });
 
+            // ================= ADD CHILD =================
             addBtn.addEventListener("click", (e) => {
                 e.stopPropagation();
 
-                const text = prompt("New sub-subtask:");
+                const text = prompt("New subtask:");
                 if (!text) return;
-
-                sub.children = sub.children || [];
 
                 sub.children.push({
                     text,
-                    done: false
+                    done: false,
+                    children: [],
+                    collapsed: false
                 });
 
                 renderSubtasks(currentEditingTask.taskData.subtasks);
             });
 
+            // ================= RIGHT CLICK =================
             div.addEventListener("contextmenu", (e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -226,9 +231,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 showContextMenu(e.pageX, e.pageY);
             });
 
-            // collapse / expand (click header except checkbox)
+            // ================= COLLAPSE =================
             header.addEventListener("click", (e) => {
-                if (e.target.tagName === "INPUT") return;
+
+                if (
+                    e.target.tagName === "INPUT" ||
+                    e.target.tagName === "BUTTON"
+                ) return;
+
                 if (sub.children.length === 0) return;
 
                 sub.collapsed = !sub.collapsed;
@@ -237,42 +247,22 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             // ================= CHILDREN =================
-            if (sub.children.length > 0 && !sub.collapsed) {
+            if (
+                sub.children.length > 0 &&
+                !sub.collapsed
+            ) {
 
-                const childContainer = document.createElement("div");
-                childContainer.className = "subtask-children";
+                const childContainer =
+                    document.createElement("div");
 
-                sub.children.forEach(child => {
+                childContainer.className =
+                    "subtask-children";
 
-                    const childDiv = document.createElement("div");
-                    childDiv.className = "subtask child";
-
-                    const childCheckbox = document.createElement("input");
-                    childCheckbox.type = "checkbox";
-                    childCheckbox.checked = child.done;
-
-                    const childLabel = document.createElement("span");
-                    childLabel.textContent = child.text;
-
-                    childCheckbox.addEventListener("change", (e) => {
-                        child.done = e.target.checked;
-                    });
-
-                    childDiv.addEventListener("contextmenu", (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-
-                        selectedTaskElement = currentEditingTask;
-                        selectedSubtaskRef = child;
-
-                        showContextMenu(e.pageX, e.pageY);
-                    });
-
-                    childDiv.appendChild(childCheckbox);
-                    childDiv.appendChild(childLabel);
-
-                    childContainer.appendChild(childDiv);
-                });
+                renderSubtasks(
+                    sub.children,
+                    childContainer,
+                    depth + 1
+                );
 
                 div.appendChild(childContainer);
             }
@@ -288,6 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     window.addEventListener("click", () => {
+        selectedSubtaskRef = null;
         contextMenu.style.display = "none";
     });
 

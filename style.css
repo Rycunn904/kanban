@@ -221,10 +221,10 @@ body {
 }
 
 .subtask-children {
-    margin-left: 22px;
+    margin-left: 20px;
     border-left: 2px solid #4e5056;
     padding-left: 10px;
-    width: 100%;
+    width: calc(100% - 20px);
 }
 
 .subtask.child {
